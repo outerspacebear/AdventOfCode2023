@@ -9,6 +9,14 @@ class MappedRange:
         self.source_range_start = source_range_start
         self.range_length = range_length
 
+class SeedRange:
+    range_start = 0
+    range_length = 0
+
+    def __init__(self, start, length):
+        self.range_length = length
+        self.range_start = start
+
 
 def get_destination_value_from_map(source_value, map):
 
@@ -65,7 +73,24 @@ def get_seeds_from_input_string(line):
 
     seeds_str = line.split(':')[1]
     seeds_strs = seeds_str.split()
-    seeds = [int(seed_str) for seed_str in seeds_strs]  
+
+    seeds = []
+
+    print(len(seeds_strs))
+    seed_text_index = -1
+    while seed_text_index < len(seeds_strs):
+
+        seed_text_index += 1
+        if seed_text_index >= len(seeds_strs):
+            break
+        seed_range_start = int(seeds_strs[seed_text_index])
+        seed_text_index += 1
+        seed_range_length = int(seeds_strs[seed_text_index])
+
+        print(seed_text_index, seed_range_start, seed_range_length)
+
+        seeds.append(SeedRange(seed_range_start, seed_range_length))
+
     return seeds
 
 def find_lowest_location_for_initial_seeds(file):
@@ -76,11 +101,15 @@ def find_lowest_location_for_initial_seeds(file):
 
     maps = get_maps(input_lines)
 
-    last_destination_values = []
-    for seed in input_seeds:
-        last_destination_values.append(get_last_mapped_value_for_seed(seed, maps))
+    lowest_location = 0
+    for seed_range in input_seeds:
+        for seed in range(seed_range.range_start, seed_range.range_start + seed_range.range_length):
+            last_mapped_value = get_last_mapped_value_for_seed(seed, maps)
+            print(last_mapped_value)
+            if lowest_location == 0 or last_mapped_value < lowest_location:
+                lowest_location = last_mapped_value
 
-    return min(last_destination_values)
+    return lowest_location
             
 
 
