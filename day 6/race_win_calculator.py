@@ -21,34 +21,33 @@ def get_number_of_ways_to_win_race(race_time, race_record_distance):
     return number_of_ways_to_win
 
 
-def get_numbers_from_line(line):
+def get_number_from_line(line):
 
     strs = line.split()
-    numbers = [int(num_str) for num_str in strs]
-    return numbers
+    number_str = ''
+    for str in strs:
+        number_str += str
+    return int(number_str)
 
 
-def get_number_of_ways_to_win_each_race(input_file):
+def get_number_of_ways_to_win_main_race(input_file):
 
     input_lines = input_file.readlines()
     race_times_str = input_lines[0].split(':')[1]
     race_distances_str = input_lines[1].split(':')[1]
 
-    race_times = get_numbers_from_line(race_times_str)
-    race_distances = get_numbers_from_line(race_distances_str)
+    race_time = get_number_from_line(race_times_str)
+    race_distance = get_number_from_line(race_distances_str)
 
-    numbers_of_ways_to_win_each_race = []
-    for race_index in range(0, len(race_times)):
-        numbers_of_ways_to_win_each_race.append(get_number_of_ways_to_win_race(race_times[race_index], race_distances[race_index]))
+    number_of_ways_to_win_race = get_number_of_ways_to_win_race(race_time, race_distance)
 
-    return numbers_of_ways_to_win_each_race
+    return number_of_ways_to_win_race
 
 
 if __name__ == "__main__":
 
     input_file = open('input.txt', 'r')
 
-    ways_to_win_each_race = get_number_of_ways_to_win_each_race(input_file)
-    multiplication = math.prod(ways_to_win_each_race)
+    ways_to_win_race = get_number_of_ways_to_win_main_race(input_file)
 
-    print("The multiplication of the number of ways to win each race is:", multiplication)
+    print("The number of ways to win the race is:", ways_to_win_race)
