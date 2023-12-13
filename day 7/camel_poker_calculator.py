@@ -35,24 +35,44 @@ def get_hand_type(cards):
 
     counts = card_counts.values()
 
+    j_count = 0
+    if 'J' in card_counts.keys():
+        j_count = card_counts['J']
+
     if len(counts) == 1:
         return HandType.FiveOfAKind
     elif len(counts) == 2:
-        if 4 in counts:
+        if j_count > 0:
+            return HandType.FiveOfAKind
+        elif 4 in counts:
             return HandType.FourOfAKind
         else:
             return HandType.FullHouse
     elif 3 in counts:
-        return HandType.ThreeOfAKind
+        if j_count > 0:
+            return HandType.FourOfAKind
+        else:
+            return HandType.ThreeOfAKind
     elif len(counts) == 3:
-        return HandType.TwoPair
+        if j_count == 2:
+            return HandType.FourOfAKind
+        elif j_count > 0:
+            return HandType.FullHouse
+        else:
+            return HandType.TwoPair
     elif len(counts) == 4:
-        return HandType.OnePair
+        if j_count > 0:
+            return HandType.ThreeOfAKind
+        else:
+            return HandType.OnePair
     else:
-        return HandType.HighCard
+        if j_count > 0:
+            return HandType.OnePair
+        else:
+            return HandType.HighCard
 
 
-def get_stronger_picture_card_when_cards_not_the_same(card_a, card_b):
+def get_stronger_card_when_cards_not_the_same(card_a, card_b):
 
     if card_a == 'A' or card_b == 'A':
         return 'A'
@@ -60,6 +80,24 @@ def get_stronger_picture_card_when_cards_not_the_same(card_a, card_b):
         return 'K'
     elif card_a == 'Q' or card_b == 'Q':
         return 'Q'
+    if card_a == 'T' or card_b == 'T':
+        return 'T'
+    if card_a == '9' or card_b == '9':
+        return '9'
+    if card_a == '8' or card_b == '8':
+        return '8'
+    if card_a == '7' or card_b == '7':
+        return '7'
+    if card_a == '6' or card_b == '6':
+        return '6'
+    if card_a == '5' or card_b == '5':
+        return '5'
+    if card_a == '4' or card_b == '4':
+        return '4'
+    if card_a == '3' or card_b == '3':
+        return '3'
+    if card_a == '2' or card_b == '2':
+        return '2'
     elif card_a == 'J' or card_b == 'J':
         return 'J'
     else:
@@ -71,29 +109,15 @@ def get_stronger_cards(first_cards, second_cards):
 
         first_card = first_cards[card_index]
         second_card = second_cards[card_index]
-        first_card_is_number = first_card.isdigit()
-        second_card_is_number = second_card.isdigit()
 
-        if first_card_is_number and not second_card_is_number:
-            return second_cards
-        elif second_card_is_number and not first_card_is_number:
+        if first_card == second_card:
+            continue
+
+        stronger_card = get_stronger_card_when_cards_not_the_same(first_card, second_card)
+        if stronger_card == first_card:
             return first_cards
-        elif first_card_is_number and second_card_is_number:
-            if int(first_card) != int(second_card):
-                if int(first_card) > int(second_card):
-                    return first_cards
-                else:
-                    return second_cards
-            else:
-                continue
         else:
-            if first_card == second_card:
-                continue
-            stronger_card = get_stronger_picture_card_when_cards_not_the_same(first_card, second_card)
-            if stronger_card == first_card:
-                return first_cards
-            else:
-                return second_cards
+            return second_cards
 
 
 def compare_hands(hand_a, hand_b):
@@ -143,6 +167,9 @@ def calculate_total_winnings(file):
 
     hands = get_hands_from_file(file)
     hands = get_hands_sorted_strong_to_weak(hands)
+
+    for hand in hands:
+        print(hand.cards, "\t", hand.type)
 
     total_winnings = 0
 
